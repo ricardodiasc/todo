@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import {listarTodosApi} from './api/todo-api';
+import {listarTodosApi, incluirTodoApi} from './api/todo-api';
+
+import IncluirTodo from './components/IncluirTodo';
 
 class App extends Component {
     constructor(props){
         super(props);
         this.state = {
-            todos : []
+            todos : [],
+            descricaoNovo:''
         }
     }
 
     async carregarTodos(event){
-        event.preventDefault();
-        console.log('clicou no evento :)');
+        
         let todos = await listarTodosApi();
         this.setState({
             todos: todos
@@ -19,22 +21,19 @@ class App extends Component {
         console.log(todos);
     }
 
-    addTodo(event){
-        event.preventDefault();
-
+    addTodo(descricaoNovo){
+        incluirTodoApi(descricaoNovo);
     }
 
     markCompleted(event){
-        console.log('click task')
+        console.log('click task');
         console.log(event)
     }
 
     render() {
         return (
             <div>
-                <input type="text" name=""/>
-                <button onClick={this.carregarTodos.bind(this)}>Carregar Todos</button>                
-                <button onClick={this.addTodo.bind(this)}>Adicionar Todo</button>
+                <IncluirTodo addTodo={this.addTodo.bind(this)} carregarTodos={this.carregarTodos.bind(this)} descricaoNovo={this.state.descricaoNovo} />
                 <div>
                     <ul>
                         {
