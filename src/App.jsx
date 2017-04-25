@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import {listarTodosApi, incluirTodoApi} from './api/todo-api';
+import { listarTodosApi, incluirTodoApi} from './api/todo-api';
+import { createStore } from 'redux';
+import { todoReducer } from './reducer/todo-reducer';
 
 import IncluirTodo from './components/IncluirTodo';
+
+const store = createStore(todoReducer);
+
 
 class App extends Component {
     constructor(props){
@@ -10,24 +15,34 @@ class App extends Component {
             todos : [],
             descricaoNovo:''
         }
+
+        
     }
 
-    async carregarTodos(event){
+    componentDidMount(){
+        store.subscribe(
+            ()=>{
+                this.setState({
+                    todos:store.getState().todos
+                });
+        });
         
-        let todos = await listarTodosApi();
-        this.setState({
-            todos: todos
-        })
-        console.log(todos);
+    }
+
+    carregarTodos(event){
+        store.dispatch({type:'LISTAR_TODOS',
+            todos:[{
+                id:1,
+                descricao:'teste',
+                completed:false
+            }]});
+        
+
+
     }
 
     addTodo(descricaoNovo){
         incluirTodoApi(descricaoNovo);
-    }
-
-    markCompleted(event){
-        console.log('click task');
-        console.log(event)
     }
 
     render() {
@@ -39,7 +54,7 @@ class App extends Component {
                         {
                             this.state.todos && this.state.todos.map(todo=>{
                                 return (
-                                    <li key={todo.id} onClick={this.markCompleted.bind(this)}>{todo.descricao}</li>
+                                    <li key={todo.id}>{todo.descricao}</li>
                                 )
                             })
                         }
